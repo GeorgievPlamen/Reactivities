@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { Activity } from "../models/activity";
+import { toast } from "react-toastify";
+import { router } from "../router/Routes";
 
 const sleep = (delay: number) => {
     return new Promise((resolve) => {
@@ -14,13 +16,29 @@ axios.defaults.baseURL = "http://localhost:5000/api";
 axios.defaults.withCredentials = true;
 
 axios.interceptors.response.use(async response => {
-    try {
         await sleep(500);
         return response;
-    } catch (error) {
-        console.log(error);
-        return await Promise.reject(error);
+}, (error: AxiosError) => {
+    const {data, status} = error.response!;
+    switch (status) {
+        case 400:
+            toast.error("bad request");
+            break;
+        case 401:
+            toast.error("unathorised");
+            break;
+        case 403:
+            toast.error("forbidden");
+            break;
+        case 404:
+            toast.error("not found");
+            router.navigate("/not-found");
+            break;
+        case 500:
+            toast.error("server error");
+            break;
     }
+    return Promise.reject(error);
 })
 
 const responseBody = <T> (response: AxiosResponse<T>) => response.data;
