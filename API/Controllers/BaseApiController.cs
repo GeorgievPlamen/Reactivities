@@ -26,7 +26,7 @@ namespace API.Controllers
 
         protected ActionResult HandlePagedResult<T>(Result<PagedList<T>> result)
         {
-   k         if (result == null) return NotFound();
+            if (result == null) return NotFound();
             if (result.IsSuccess && result.Value != null)
             {
                 Response.AddPaginationHeader(result.Value.CurrentPage, result.Value.PageSize, result.Value.TotalCount, result.Value.TotalPages);
