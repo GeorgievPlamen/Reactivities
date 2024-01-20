@@ -1,3 +1,4 @@
+using Application.Profiles;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -8,6 +9,16 @@ namespace API.Controllers
         public async Task<IActionResult> GetProfile(string username)
         {
             return HandleResult(await Mediator.Send(new Application.Profiles.Details.Query { Username = username }));
+        }
+
+        [HttpGet("{username}/activities")]
+        public async Task<IActionResult> GetUserActivities(string username, string predicate)
+        {
+            return HandleResult(await Mediator.Send(new ListActivities.Query
+            {
+                Username = username,
+                Predicate = predicate
+            }));
         }
     }
 }
